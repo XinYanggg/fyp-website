@@ -39,3 +39,14 @@ export interface ChatMessage {
     role: 'user' | 'ai';
     message: string;
 }
+
+declare module "next-auth" {
+    interface Session {
+        user: {
+            id: string;
+            name?: string | null;
+            email?: string | null;
+            image?: string | null;
+        };
+    }
+}

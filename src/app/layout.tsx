@@ -34,18 +34,56 @@
 // }
 
 
+// import type { Metadata } from 'next';
+// import { Inter } from 'next/font/google';
+// import './globals.css';
+// import { AppProvider } from '@/app/context/AppContext';
+// import NavBar from '@/app/components/layout/NavBar';
+//
+// const inter = Inter({ subsets: ['latin'] });
+//
+// export const metadata: Metadata = {
+//     title: 'durian.health - AI Disease Detection',
+//     description: 'AI-powered durian leaf disease detection for Malaysian farmers',
+// };
+//
+// export default function RootLayout({
+//                                        children,
+//                                    }: {
+//     children: React.ReactNode;
+// }) {
+//     return (
+//         <html lang="en">
+//         <body className={inter.className}>
+//         <AppProvider>
+//             <div className="min-h-screen bg-gray-50">
+//                 <NavBar />
+//                 {children}
+//             </div>
+//         </AppProvider>
+//         </body>
+//         </html>
+//     );
+// }
+
+
+
+
+"use client";
+
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { AppProvider } from '@/app/context/AppContext';
 import NavBar from '@/app/components/layout/NavBar';
+import { SessionProvider } from 'next-auth/react';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata: Metadata = {
-    title: 'durian.health - AI Disease Detection',
-    description: 'AI-powered durian leaf disease detection for Malaysian farmers',
-};
+// export const metadata: Metadata = {
+//     title: 'durian.health - AI Disease Detection',
+//     description: 'AI-powered durian leaf disease detection for Malaysian farmers',
+// };
 
 export default function RootLayout({
                                        children,
@@ -55,12 +93,15 @@ export default function RootLayout({
     return (
         <html lang="en">
         <body className={inter.className}>
-        <AppProvider>
-            <div className="min-h-screen bg-gray-50">
-                <NavBar />
-                {children}
-            </div>
-        </AppProvider>
+        {/* Wrap the entire app in SessionProvider */}
+        <SessionProvider>
+            <AppProvider>
+                <div className="min-h-screen bg-gray-50">
+                    <NavBar />
+                    {children}
+                </div>
+            </AppProvider>
+        </SessionProvider>
         </body>
         </html>
     );

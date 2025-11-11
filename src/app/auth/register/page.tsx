@@ -21,7 +21,7 @@ export default function RegisterPage() {
         });
 
         if (res.ok) {
-            setSuccess("Account created successfully! Redirecting...");
+            setSuccess("Signup successful! Please check your email to verify your account");
             setTimeout(() => router.push("/auth"), 2000);
         } else {
             const data = await res.json();

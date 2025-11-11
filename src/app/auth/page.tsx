@@ -90,39 +90,6 @@
 
 
 
-
-
-// "use client";
-//
-// import { signIn } from "next-auth/react";
-// import { useState } from "react";
-//
-// export default function AuthPage() {
-//     const [loading, setLoading] = useState(false);
-//
-//     const handleGoogleLogin = async () => {
-//         setLoading(true);
-//         await signIn("google", { callbackUrl: "/dashboard" });
-//         setLoading(false);
-//     };
-//
-//     return (
-//         <div className="flex flex-col items-center justify-center min-h-screen">
-//             <h1 className="text-3xl font-bold mb-4">Login to Durian AI System</h1>
-//             <button
-//                 onClick={handleGoogleLogin}
-//                 disabled={loading}
-//                 className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700"
-//             >
-//                 {loading ? "Signing in..." : "Sign in with Google"}
-//             </button>
-//         </div>
-//     );
-// }
-
-
-
-
 "use client";
 
 import { signIn } from "next-auth/react";
@@ -195,6 +162,11 @@ export default function AuthPage() {
                     Sign in with Google
                 </button>
             </div>
+
+            <p>
+                Forgot password? <Link href="/auth/forgot-password">Reset it here</Link>
+            </p>
+
         </div>
     );
 }

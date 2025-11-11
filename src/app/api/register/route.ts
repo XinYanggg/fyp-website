@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import clientPromise from "@/lib/mongodb";
+import { v4 as uuidv4 } from "uuid";
+import nodemailer from "nodemailer";
 
 export async function POST(req: Request) {
     try {
@@ -11,7 +13,7 @@ export async function POST(req: Request) {
         }
 
         const client = await clientPromise;
-        const db = client.db("durian");
+        const db = client.db("auth");
 
         const existingUser = await db.collection("users").findOne({ email });
         if (existingUser) {
@@ -19,16 +21,42 @@ export async function POST(req: Request) {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Generate a unique email verification token
+        const verificationToken = uuidv4();
+
+        // Create the user in the DB (initially unverified)
         await db.collection("users").insertOne({
             name,
             email,
-            password: hashedPassword,
+            password: hashedPassword,  // Only for credentials-based users
+            isVerified: false,  // Initially set to false
+            verificationToken,
             createdAt: new Date(),
         });
 
-        return NextResponse.json({ message: "User registered successfully" }, { status: 201 });
-    } catch (err) {
-        console.error(err);
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+        // Create a verification link
+        const verificationLink = `${process.env.NEXT_APP_URL}/auth/verify-email?token=${verificationToken}`;
+
+        // Send verification email
+        const transporter = nodemailer.createTransport({
+            service: "Zoho",
+            auth: {
+                user: process.env.SMTP_USER,
+                pass: process.env.SMTP_PASS,
+            },
+        });
+
+
+        await transporter.sendMail({
+            from: process.env.SMTP_USER,
+            to: email,
+            subject: "durian.health - Verify Your Email",
+            html: `<p>Click <a href="${verificationLink}">here</a> to verify your email and complete your registration.</p>`,
+        });
+
+        return NextResponse.json({ message: "Signup successful! Please check your email to verify your account" }, { status: 200 });
+    } catch (error) {
+        return NextResponse.json({ error: "Failed to send verification email. Please try again later." }, { status: 500 });
     }
 }

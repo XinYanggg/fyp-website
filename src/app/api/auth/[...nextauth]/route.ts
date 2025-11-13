@@ -69,7 +69,7 @@ export const authOptions = {
                     throw new Error("Invalid password");
                 }
 
-                return { id: user._id.toString(), name: user.name, email: user.email };
+                return { id: user._id.toString(), name: user.name, email: user.email, image: user.image };
             },
         }),
     ],

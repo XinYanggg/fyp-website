@@ -1,13 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import {useApp} from '@/app/context/AppContext';
 import {motion} from "framer-motion";
 import {Upload} from "lucide-react";
 import React from "react";
+import { useSession } from 'next-auth/react';
 
 export default function HomePage() {
-    const {isLoggedIn} = useApp();
+    const { data: session } = useSession();
+    const isLoggedIn = session ? true : false;
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-orange-50">

@@ -34,3 +34,32 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
+
+{
+    "_id": "ObjectId",
+    "ownerEmail": "owner@gmail.com",
+    "name": "Durian Type A",
+    "location": "Pahang",
+    "members": [
+        { "email": "owner@gmail.com", "role": "owner" },
+        { "email": "worker@gmail.com", "role": "member" }
+    ],
+    "trees": [
+        {
+            "id": "T001",
+            "cultivar": "Musang King",
+            "currentDisease": "Healthy",
+            "confidence": 95,
+            "lastScan": "1/2/2025, 3:33 PM",
+            "scans": [
+                {
+                    "disease": "Healthy",
+                    "confidence": 95,
+                    "timestamp": "1/2/2025, 3:33 PM"
+                }
+            ]
+        }
+    ]
+}

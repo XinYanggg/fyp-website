@@ -1,191 +1,164 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Farm, Tree, User } from '@/app/lib/types';
-import { generateMockScans } from '@/app/lib/utils';
+import React, {
+    createContext,
+    useContext,
+    useState,
+    useEffect,
+    ReactNode,
+} from "react";
+import { useSession } from "next-auth/react";
+import { Farm, Tree } from "@/app/lib/type";
 
 interface AppContextType {
-    user: User | null;
-    isLoggedIn: boolean;
     farms: Farm[];
     selectedFarm: Farm | null;
     selectedTree: Tree | null;
-    login: () => void;
-    logout: () => void;
+
+    refreshFarms: () => Promise<void>;
+
     setSelectedFarm: (farm: Farm | null) => void;
     setSelectedTree: (tree: Tree | null) => void;
-    addFarm: (name: string, location: string) => void;
-    addTree: (farmId: string, treeId: string, cultivar: string) => void;
-    addMember: (farmId: string, email: string) => void;
-    removeMember: (farmId: string, email: string) => void;
-    saveScan: (farmId: string, treeId: string, disease: string, confidence: number) => void;
+
+    addFarm: (name: string, location: string) => Promise<void>;
+    addTree: (farmId: string, treeId: string, cultivar: string) => Promise<void>;
+    addMember: (farmId: string, email: string) => Promise<void>;
+    removeMember: (farmId: string, email: string) => Promise<void>;
+    saveScan: (
+        farmId: string,
+        treeId: string,
+        disease: string,
+        confidence: number
+    ) => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-const mockFarms: Farm[] = [
-    {
-        id: '1',
-        name: 'Farm #1',
-        location: 'Location A',
-        treeCount: 2,
-        members: [
-            { email: 'bcd@mail.com', role: 'owner' },
-            { email: 'cde@mail.com', role: 'member' }
-        ],
-        trees: [
-            {
-                id: '1',
-                cultivar: 'Musang King',
-                currentDisease: 'Healthy',
-                confidence: 96,
-                lastScan: '14/5/2025 17:00',
-                scans: generateMockScans()
-            },
-            {
-                id: '2',
-                cultivar: 'D24',
-                currentDisease: 'Leaf Spot',
-                confidence: 90,
-                lastScan: '12/5/2025 18:00',
-                scans: generateMockScans()
-            }
-        ],
-        healthPercentage: 80,
-        lastScan: '14/5/2025 17:00'
-    }
-];
-
 export function AppProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<User | null>(null);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [farms, setFarms] = useState<Farm[]>(mockFarms);
+    const { data: session, status } = useSession();
+
+    const [farms, setFarms] = useState<Farm[]>([]);
     const [selectedFarm, setSelectedFarm] = useState<Farm | null>(null);
     const [selectedTree, setSelectedTree] = useState<Tree | null>(null);
 
-    const login = () => {
-        setUser({ name: 'Alex', email: 'alex@example.com' });
-        setIsLoggedIn(true);
+    // ------------------------------------------------------------
+    // Load farms from API when session becomes authenticated
+    // ------------------------------------------------------------
+    const refreshFarms = async () => {
+        try {
+            const res = await fetch("/api/farm/get");
+            const data = await res.json();
+            setFarms(data.farms || []);
+        } catch (err) {
+            console.error("Failed to load farms:", err);
+        }
     };
 
-    const logout = () => {
-        setUser(null);
-        setIsLoggedIn(false);
-        setSelectedFarm(null);
-        setSelectedTree(null);
-    };
-
-    const addFarm = (name: string, location: string) => {
-        const newFarm: Farm = {
-            id: String(farms.length + 1),
-            name,
-            location,
-            treeCount: 0,
-            members: [{ email: user?.email || '', role: 'owner' }],
-            trees: [],
-            healthPercentage: 100,
-            lastScan: 'Never'
+    // load farms only when user is signed in
+    useEffect(() => {
+        const refreshFarms = async () => {
+            try {
+                const res = await fetch("/api/farm/get");
+                const data = await res.json();
+                setFarms(data.farms || []);
+                console.log(data);
+            } catch (err) {
+                console.error("Failed to load farms:", err);
+            }
         };
-        setFarms([...farms, newFarm]);
+        if (status === "authenticated") {
+            refreshFarms();
+        }
+    }, [status]);
+
+    // ------------------------------------------------------------
+    // API WRAPPERS
+    // ------------------------------------------------------------
+
+    const addFarm = async (name: string, location: string) => {
+        try {
+            await fetch("/api/farm/add", {
+                method: "POST",
+                body: JSON.stringify({ name, location }),
+            });
+            await refreshFarms();
+        } catch (err) {
+            console.error("Error adding farm:", err);
+        }
     };
 
-    const addTree = (farmId: string, treeId: string, cultivar: string) => {
-        setFarms(farms.map(farm => {
-            if (farm.id === farmId) {
-                return {
-                    ...farm,
-                    trees: [...farm.trees, {
-                        id: treeId,
-                        cultivar,
-                        currentDisease: 'Not scanned',
-                        confidence: 0,
-                        lastScan: 'Never',
-                        scans: []
-                    }],
-                    treeCount: farm.treeCount + 1
-                };
-            }
-            return farm;
-        }));
+    const addTree = async (farmId: string, treeId: string, cultivar: string) => {
+        try {
+            await fetch("/api/farm/tree/add", {
+                method: "POST",
+                body: JSON.stringify({ farmId, treeId, cultivar }),
+            });
+            await refreshFarms();
+        } catch (err) {
+            console.error("Error adding tree:", err);
+        }
     };
 
-    const addMember = (farmId: string, email: string) => {
-        setFarms(farms.map(farm => {
-            if (farm.id === farmId) {
-                return {
-                    ...farm,
-                    members: [...farm.members, { email, role: 'member' as const }]
-                };
-            }
-            return farm;
-        }));
+    const addMember = async (farmId: string, email: string) => {
+        try {
+            await fetch("/api/farm/member/add", {
+                method: "POST",
+                body: JSON.stringify({ farmId, email }),
+            });
+            await refreshFarms();
+        } catch (err) {
+            console.error("Error adding member:", err);
+        }
     };
 
-    const removeMember = (farmId: string, email: string) => {
-        setFarms(farms.map(farm => {
-            if (farm.id === farmId) {
-                return {
-                    ...farm,
-                    members: farm.members.filter(m => m.email !== email)
-                };
-            }
-            return farm;
-        }));
+    const removeMember = async (farmId: string, email: string) => {
+        try {
+            await fetch("/api/farm/member/remove", {
+                method: "POST",
+                body: JSON.stringify({ farmId, email }),
+            });
+            await refreshFarms();
+        } catch (err) {
+            console.error("Error removing member:", err);
+        }
     };
 
-    const saveScan = (farmId: string, treeId: string, disease: string, confidence: number) => {
-        setFarms(farms.map(farm => {
-            if (farm.id === farmId) {
-                return {
-                    ...farm,
-                    trees: farm.trees.map(tree => {
-                        if (tree.id === treeId) {
-                            const now = new Date();
-                            const newScan = {
-                                disease,
-                                confidence,
-                                timestamp: now.toLocaleString('en-GB', {
-                                    day: '2-digit',
-                                    month: '2-digit',
-                                    year: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                }),
-                                date: now
-                            };
-                            return {
-                                ...tree,
-                                scans: [newScan, ...tree.scans],
-                                currentDisease: disease,
-                                confidence,
-                                lastScan: newScan.timestamp
-                            };
-                        }
-                        return tree;
-                    })
-                };
-            }
-            return farm;
-        }));
+    const saveScan = async (
+        farmId: string,
+        treeId: string,
+        disease: string,
+        confidence: number
+    ) => {
+        try {
+            await fetch("/api/scan/save", {
+                method: "POST",
+                body: JSON.stringify({ farmId, treeId, disease, confidence }),
+            });
+            await refreshFarms();
+        } catch (err) {
+            console.error("Error saving scan:", err);
+        }
     };
 
     return (
-        <AppContext.Provider value={{
-            user,
-            isLoggedIn,
-            farms,
-            selectedFarm,
-            selectedTree,
-            login,
-            logout,
-            setSelectedFarm,
-            setSelectedTree,
-            addFarm,
-            addTree,
-            addMember,
-            removeMember,
-            saveScan
-        }}>
+        <AppContext.Provider
+            value={{
+                farms,
+                selectedFarm,
+                selectedTree,
+
+                refreshFarms,
+
+                setSelectedFarm,
+                setSelectedTree,
+
+                addFarm,
+                addTree,
+                addMember,
+                removeMember,
+                saveScan,
+            }}
+        >
             {children}
         </AppContext.Provider>
     );
@@ -193,8 +166,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
 export function useApp() {
     const context = useContext(AppContext);
-    if (context === undefined) {
-        throw new Error('useApp must be used within an AppProvider');
+    if (!context) {
+        throw new Error("useApp must be used inside <AppProvider>");
     }
     return context;
 }

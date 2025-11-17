@@ -4,7 +4,6 @@ import {useParams, useRouter} from 'next/navigation';
 import { Search, Plus, Camera } from 'lucide-react';
 import { useApp } from '@/app/context/AppContext';
 import Breadcrumb from '@/app/components/ui/Breadcrumb';
-import TrendChart from '@/app/components/charts/TrendChart';
 import PieChart from '@/app/components/charts/PieChart';
 import React, { useState } from 'react';
 import Modal from '@/app/components/ui/Modal';
@@ -18,9 +17,10 @@ export default function FarmDetailPage({ params }: { params: { id: string } }) {
     const [showAddTree, setShowAddTree] = useState(false);
     const [treeId, setTreeId] = useState('');
     const [cultivar, setCultivar] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');  // Search query state
 
     const { id } = useParams();
-    const farm = farms.find(f => f.id === id) || selectedFarm;
+    const farm = farms.find(f => f._id === id) || selectedFarm;
 
     if (!farm) {
         return <NotFound/>;
@@ -40,9 +40,22 @@ export default function FarmDetailPage({ params }: { params: { id: string } }) {
 
     const allScans = farm.trees.flatMap(t => t.scans);
 
+    // Filter trees based on search query
+    const filteredTrees = farm.trees.filter((tree) => {
+        const lowerQuery = searchQuery.toLowerCase();
+        return (
+            tree.id.toString().toLowerCase().includes(lowerQuery) ||  // Match by tree ID
+            tree.cultivar.toLowerCase().includes(lowerQuery) // Match by cultivar
+        );
+    });
+
     const handleAddTree = () => {
         if (treeId && cultivar) {
-            addTree(farm.id, treeId, cultivar);
+            if (farm._id) {
+                addTree(String(farm._id), treeId, cultivar);
+            } else {
+                console.error("Farm ID is undefined");
+            }
             setTreeId('');
             setCultivar('');
             setShowAddTree(false);
@@ -66,10 +79,24 @@ export default function FarmDetailPage({ params }: { params: { id: string } }) {
                         <h3 className="font-semibold text-gray-900 mb-4">Farm Overview</h3>
                         <div className="space-y-2 text-sm text-gray-600">
                             <p><span className="font-medium text-gray-700">Location:</span> {farm.location}</p>
-                            <p><span className="font-medium text-gray-700">Total Trees:</span> {farm.treeCount}</p>
+                            <p><span className="font-medium text-gray-700">Total Trees:</span> {farm.trees.length}</p>
                             <p><span className="font-medium text-gray-700">Members:</span> {farm.members.length}</p>
-                            <p><span className="font-medium text-gray-700">Last Scan:</span> {farm.lastScan}</p>
-                            <p><span className="font-medium text-gray-700">Healthy:</span> {farm.healthPercentage}</p>
+                            <p>
+                                <span className="font-medium text-gray-700">Last Scan:</span> {
+                                (() => {
+                                    const allScans = farm.trees.map(t => t.lastScan).filter(v => v !== "N/A");
+                                    return allScans.length > 0 ? allScans.sort((a, b) => new Date(b).getTime() - new Date(a).getTime())[0] : "N/A";
+                                })()
+                            }
+                            </p>
+                            <p>
+                                <span className="font-medium text-gray-700">Healthy:</span> {
+                                (() => {
+                                    const healthy = farm.trees.filter(t => t.currentDisease === "Healthy").length;
+                                    return ((healthy / farm.trees.length) * 100).toFixed(0) + "%";
+                                })()
+                            }
+                            </p>
                         </div>
                     </div>
 
@@ -105,6 +132,8 @@ export default function FarmDetailPage({ params }: { params: { id: string } }) {
                         <input
                             type="text"
                             placeholder="Search for your tree"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}  // Update search query
                             className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                         />
                     </div>
@@ -112,7 +141,7 @@ export default function FarmDetailPage({ params }: { params: { id: string } }) {
                         <Plus className="w-5 h-5"/>
                         New Tree
                     </Button>
-                    <Button onClick={() => router.push(`/scan?farmId=${farm.id}`)}
+                    <Button onClick={() => router.push(`/scan?farmId=${farm._id}`)}
                             className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 py-3 rounded-xl font-medium hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
                         <Camera className="w-5 h-5"/>
                         Scan
@@ -120,46 +149,50 @@ export default function FarmDetailPage({ params }: { params: { id: string } }) {
                 </div>
 
                 <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                    <table className="w-full">
-                        <thead className="bg-gray-100">
-                        <tr>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Tree</th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Disease</th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Confidence</th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Last scan</th>
-                            <th className="px-6 py-4"></th>
-                        </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200">
-                        {farm.trees.map((tree) => (
-                            <tr key={tree.id} className="hover:bg-gray-50 transition-colors">
-                                <td className="px-6 py-4 font-medium text-gray-900">Tree #{tree.id}</td>
-                                <td className="px-6 py-4">
-                    <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
-                        tree.currentDisease === 'Healthy'
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-orange-100 text-orange-800'
-                    }`}>
-                      {tree.currentDisease}
-                    </span>
-                                </td>
-                                <td className="px-6 py-4 text-gray-700">{tree.confidence}%</td>
-                                <td className="px-6 py-4 text-gray-700">{tree.lastScan}</td>
-                                <td className="px-6 py-4">
-                                    <button
-                                        onClick={() => {
-                                            setSelectedTree(tree);
-                                            router.push(`/farm/${farm.id}/tree/${tree.id}`);
-                                        }}
-                                        className="px-4 py-2 border-2 border-gray-300 rounded-lg text-sm font-medium cursor-pointer transition-all duration-300 ease-in-out hover:border-primary-500 hover:text-primary-600 hover:bg-primary-50 hover:shadow-md"
-                                    >
-                                        Details
-                                    </button>
-                                </td>
+                    <div className="overflow-x-auto">
+                        <table className="w-full">
+                            <thead className="bg-gray-100">
+                            <tr>
+                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Tree ID</th>
+                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Cultivar</th>
+                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Disease</th>
+                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Confidence</th>
+                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Last scan</th>
+                                <th className="px-6 py-4"></th>
                             </tr>
-                        ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200">
+                            {filteredTrees.map((tree) => (
+                                <tr key={tree.id} className="hover:bg-gray-50 transition-colors">
+                                    <td className="px-6 py-4 font-medium text-gray-900">{tree.id}</td>
+                                    <td className="px-6 py-4 text-gray-700">{tree.cultivar}</td>
+                                    <td className="px-6 py-4">
+                                        <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
+                                            tree.currentDisease === 'Healthy'
+                                                ? 'bg-green-100 text-green-800'
+                                                : 'bg-orange-100 text-orange-800'
+                                        }`}>
+                                          {tree.currentDisease}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4 text-gray-700">{tree.confidence}%</td>
+                                    <td className="px-6 py-4 text-gray-700">{tree.lastScan}</td>
+                                    <td className="px-6 py-4">
+                                        <button
+                                            onClick={() => {
+                                                setSelectedTree(tree);
+                                                router.push(`/farm/${farm._id}/tree/${tree.id}`);
+                                            }}
+                                            className="px-4 py-2 border-2 border-gray-300 rounded-lg text-sm font-medium cursor-pointer transition-all duration-300 ease-in-out hover:border-primary-500 hover:text-primary-600 hover:bg-primary-50 hover:shadow-md"
+                                        >
+                                            Details
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 

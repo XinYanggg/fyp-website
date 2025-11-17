@@ -5,7 +5,7 @@ import { Camera, Upload } from 'lucide-react';
 import { useApp } from '@/app/context/AppContext';
 import Breadcrumb from '@/app/components/ui/Breadcrumb';
 import Button from '@/app/components/ui/Button';
-import { useState, useRef } from 'react';
+import {useState, useRef, useEffect} from 'react';
 
 export default function ScanPage() {
     const router = useRouter();
@@ -17,13 +17,25 @@ export default function ScanPage() {
     const [scanResult, setScanResult] = useState<{ disease: string; confidence: number } | null>(null);
     const [selectedFarmId, setSelectedFarmId] = useState(farmIdFromUrl || '');
     const [selectedTreeId, setSelectedTreeId] = useState('');
+    const [isMobile, setIsMobile] = useState(false);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const cameraInputRef = useRef<HTMLInputElement>(null);
 
-    const currentFarm = farms.find(f => f.id === selectedFarmId) || selectedFarm;
+    const currentFarm = farms.find(f => f._id?.toString() === selectedFarmId) || selectedFarm;
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setUploadedImage(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleCameraCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             const reader = new FileReader();
@@ -56,7 +68,27 @@ export default function ScanPage() {
         setScanResult(null);
         setUploadedImage(null);
         setSelectedTreeId('');
+
+        // Reset the file input field by setting its value to an empty string
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';  // Clear the file input
+        }
+
+        if (cameraInputRef.current) {
+            cameraInputRef.current.value = '';  // Clear the camera input (if used)
+        }
     };
+
+    useEffect(() => {
+        // Check if the device is mobile or desktop
+        const checkIfMobile = () => {
+            const userAgent = navigator.userAgent.toLowerCase();
+            const isMobileDevice = /iphone|ipod|ipad|android/.test(userAgent);
+            setIsMobile(isMobileDevice);
+        };
+        checkIfMobile();
+    }, [isMobile]);
+
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-orange-50">
@@ -65,7 +97,7 @@ export default function ScanPage() {
                     <Breadcrumb
                         items={[
                             {label: 'dashboard', onClick: () => router.push('/dashboard')},
-                            {label: currentFarm.name, onClick: () => router.push(`/farm/${currentFarm.id}`)},
+                            {label: currentFarm.name, onClick: () => router.push(`/farm/${currentFarm._id}`)},
                             {label: 'Scan'}
                         ]}
                     />
@@ -86,7 +118,7 @@ export default function ScanPage() {
                         type="file"
                         accept="image/*"
                         capture="environment"
-                        onChange={handleFileUpload}
+                        onChange={handleCameraCapture}
                         className="hidden"
                     />
 
@@ -104,13 +136,15 @@ export default function ScanPage() {
                                         <Upload className="w-5 h-5 inline mr-2"/>
                                         Browse Files
                                     </button>
-                                    <Button
-                                        onClick={() => cameraInputRef.current?.click()}
-                                        className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 rounded-xl font-medium hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                                    >
-                                        <Camera className="w-5 h-5 inline mr-2"/>
-                                        Take Photo
-                                    </Button>
+                                    {isMobile && (
+                                        <Button
+                                            onClick={() => cameraInputRef.current?.click()}
+                                            className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 rounded-xl font-medium hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                                        >
+                                            <Camera className="w-5 h-5 inline mr-2"/>
+                                            Take Photo
+                                        </Button>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -148,7 +182,7 @@ export default function ScanPage() {
                                         value={selectedFarmId}
                                         onChange={(e) => {
                                             setSelectedFarmId(e.target.value);
-                                            const farm = farms.find(f => f.id === e.target.value);
+                                            const farm = farms.find(f => f._id?.toString() === e.target.value);
                                             if (farm) setSelectedFarm(farm);
                                             setSelectedTreeId('');
                                         }}
@@ -156,7 +190,7 @@ export default function ScanPage() {
                                     >
                                         <option value="">Select a farm</option>
                                         {farms.map((farm) => (
-                                            <option key={farm.id} value={farm.id}>
+                                            <option key={farm._id?.toString()} value={farm._id?.toString()}>
                                                 {farm.name} - {farm.location}
                                             </option>
                                         ))}

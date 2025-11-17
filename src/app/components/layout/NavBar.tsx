@@ -118,35 +118,74 @@ export default function NavBar() {
                 <div className="md:hidden mt-4 pb-4 border-t pt-4">
                     <div className="flex flex-col gap-3">
                         <Link
+                            href="/#benefits"
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="text-left px-4 py-2 text-gray-700 hover:bg-gray-50 rounded transition-colors"
+                        >
+                            Benefits
+                        </Link>
+                        <Link
+                            href="/#works"
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="text-left px-4 py-2 text-gray-700 hover:bg-gray-50 rounded transition-colors"
+                        >
+                            Works
+                        </Link>
+                        <Link
                             href="/"
                             onClick={() => setMobileMenuOpen(false)}
                             className="text-left px-4 py-2 text-gray-700 hover:bg-gray-50 rounded transition-colors"
                         >
                             Knowledge Base
                         </Link>
+                        <Link
+                            href="/#about"
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="text-left px-4 py-2 text-gray-700 hover:bg-gray-50 rounded transition-colors"
+                        >
+                            About
+                        </Link>
                         {isLoggedIn && (
                             <>
                                 <Link
                                     href="/dashboard"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className="text-left px-4 py-2 text-gray-700 hover:bg-gray-50 rounded transition-colors"
+                                    className="text-left px-4 py-2 text-green-500 hover:bg-gray-50 rounded transition-colors"
                                 >
                                     Dashboard
                                 </Link>
                                 <Link
                                     href="/scan"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className="text-left px-4 py-2 bg-primary-500 text-white rounded transition-colors"
+                                    className="text-left px-4 py-2 text-green-500 hover:bg-gray-50 rounded transition-colors"
                                 >
                                     Quick Scan
                                 </Link>
+                                <div className="flex items-center gap-3 pl-4">
+                                    {user?.image ? (
+                                        <img
+                                            src={user.image}
+                                            alt={user.name || 'User Avatar'}
+                                            className="w-10 h-10 rounded-full object-cover shadow-sm"
+                                            referrerPolicy="no-referrer"
+                                        />
+                                    ) : (
+                                        <div className="w-10 h-10 bg-amber-200 from-primary-400 to-primary-600 rounded-full flex items-center justify-center shadow-sm">
+                                            <span className="text-black font-semibold">
+                                                {user?.name?.[0]?.toUpperCase() || '?'}
+                                            </span>
+                                        </div>
+                                    )}
+                                    <span className="text-gray-700 font-medium">{user?.name}</span>
+                                </div>
                                 <button
                                     onClick={() => {
                                         handleLogout();
                                         setMobileMenuOpen(false);
                                     }}
-                                    className="text-left px-4 py-2 text-gray-700 hover:bg-gray-50 rounded transition-colors"
+                                    className="text-left px-4 py-2 text-gray-700 hover:bg-gray-50 rounded transition-colors flex items-center gap-2"
                                 >
+                                    <LogOut className="w-5 h-5" />
                                     Logout
                                 </button>
                             </>
@@ -155,7 +194,7 @@ export default function NavBar() {
                             <Link
                                 href="/auth"
                                 onClick={() => setMobileMenuOpen(false)}
-                                className="text-left px-4 py-2 bg-primary-500 text-white rounded transition-colors"
+                                className="text-left px-4 py-2 text-green-500 hover:bg-gray-50 rounded transition-colors"
                             >
                                 Login
                             </Link>

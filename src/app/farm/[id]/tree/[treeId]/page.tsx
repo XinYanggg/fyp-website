@@ -23,12 +23,16 @@ export default function TreeDetailPage({
 
     const {id, treeId} = useParams();
 
-    const farm = farms.find(f => f.id === id) || selectedFarm;
+    const farm = farms.find(f => f._id === id) || selectedFarm;
     const tree = farm?.trees.find(t => t.id === treeId) || selectedTree;
 
     if (!farm || !tree) {
         return <NotFound/>
     }
+
+    const sortedScans = [...tree.scans].sort(
+        (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    );
 
     const getRecommendation = (disease: string) => {
         if (disease === 'Healthy') {
@@ -64,8 +68,8 @@ export default function TreeDetailPage({
                 <Breadcrumb
                     items={[
                         {label: 'dashboard', onClick: () => router.push('/dashboard')},
-                        {label: farm.name, onClick: () => router.push(`/farm/${farm.id}`)},
-                        {label: `Tree #${tree.id}`}
+                        {label: farm.name, onClick: () => router.push(`/farm/${farm._id}`)},
+                        {label: `${tree.id}`}
                     ]}
                 />
 
@@ -82,13 +86,13 @@ export default function TreeDetailPage({
                             <div>
                                 <span className="text-sm text-gray-600">Current Status:</span>
                                 <p className="text-lg">
-                  <span className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${
-                      tree.currentDisease === 'Healthy'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-orange-100 text-orange-800'
-                  }`}>
-                    {tree.currentDisease}
-                  </span>
+                                    <span className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${
+                                        tree.currentDisease === 'Healthy'
+                                            ? 'bg-green-100 text-green-800'
+                                            : 'bg-orange-100 text-orange-800'
+                                    }`}>
+                                        {tree.currentDisease}
+                                    </span>
                                 </p>
                             </div>
                         </div>
@@ -125,16 +129,16 @@ export default function TreeDetailPage({
                             </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
-                            {tree.scans.map((scan, index) => (
+                            {sortedScans.map((scan, index) => (
                                 <tr key={index} className="hover:bg-gray-50 transition-colors">
                                     <td className="px-6 py-4">
-                      <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
-                          scan.disease === 'Healthy'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-orange-100 text-orange-800'
-                      }`}>
-                        {scan.disease}
-                      </span>
+                                        <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
+                                            scan.disease === 'Healthy'
+                                                ? 'bg-green-100 text-green-800'
+                                                : 'bg-orange-100 text-orange-800'
+                                        }`}>
+                                            {scan.disease}
+                                        </span>
                                     </td>
                                     <td className="px-6 py-4 text-gray-700 font-medium">{scan.confidence}%</td>
                                     <td className="px-6 py-4 text-gray-600">{scan.timestamp}</td>

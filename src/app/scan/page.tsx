@@ -12,12 +12,14 @@ export default function ScanPage() {
     const searchParams = useSearchParams();
     const farmIdFromUrl = searchParams.get('farmId');
 
-    const { farms, selectedFarm, setSelectedFarm, saveScan } = useApp();
-    const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+    const { farms, selectedFarm, setSelectedFarm, saveScan, detectDisease } = useApp();
+    const [uploadedImage, setUploadedImage] = useState<File | null>(null);
     const [scanResult, setScanResult] = useState<{ disease: string; confidence: number } | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [selectedFarmId, setSelectedFarmId] = useState(farmIdFromUrl || '');
     const [selectedTreeId, setSelectedTreeId] = useState('');
     const [isMobile, setIsMobile] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -27,30 +29,26 @@ export default function ScanPage() {
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setUploadedImage(reader.result as string);
-            };
-            reader.readAsDataURL(file);
+            setUploadedImage(file);
         }
     };
 
     const handleCameraCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setUploadedImage(reader.result as string);
-            };
-            reader.readAsDataURL(file);
+            setUploadedImage(file);
         }
     };
 
-    const handleDetect = () => {
-        const diseases = ['Healthy', 'Leaf Spot', 'Algal Leaf Spot', 'Phytophthora', 'Anthracnose'];
-        const randomDisease = diseases[Math.floor(Math.random() * diseases.length)];
-        const randomConfidence = Math.floor(Math.random() * 20) + 80;
-        setScanResult({ disease: randomDisease, confidence: randomConfidence });
+    const handleDetect = async () => {
+        if (uploadedImage) {
+            setLoading(true);
+            const data = await detectDisease(uploadedImage);
+            if (data) {
+                setScanResult({ disease: data.prediction.toLowerCase().split("_").map(word => word[0].toUpperCase() + word.slice(1)).join(" "), confidence: Math.round(data.confidence * 10000) / 100, });
+            }
+            setLoading(false);
+        }
     };
 
     const handleSaveScan = () => {
@@ -88,6 +86,21 @@ export default function ScanPage() {
         };
         checkIfMobile();
     }, [isMobile]);
+
+    useEffect(() => {
+        if (!uploadedImage) return;
+
+        const updatePreview = () => {
+            const objectUrl = URL.createObjectURL(uploadedImage);
+            setPreviewUrl(objectUrl);
+            return objectUrl;
+        };
+
+        const objectUrl = updatePreview();
+
+        // cleanup: revoke old object URL
+        return () => URL.revokeObjectURL(objectUrl);
+    }, [uploadedImage]);
 
 
     return (
@@ -153,7 +166,7 @@ export default function ScanPage() {
                     {uploadedImage && (
                         <div className="mb-6">
                             <img
-                                src={uploadedImage}
+                                src={previewUrl ?? undefined}
                                 alt="Uploaded leaf"
                                 className="w-full max-h-96 object-contain rounded-xl shadow-md"
                             />
@@ -163,9 +176,10 @@ export default function ScanPage() {
                     {uploadedImage && !scanResult && (
                         <Button
                             onClick={handleDetect}
+                            disabled={loading}
                             className="w-full text-black py-3 font-medium bg-gradient-to-r from-green-500 to-green-600 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                         >
-                            Detect Disease
+                            {loading ? "Detecting..." : "Detect Disease"}
                         </Button>
                     )}
 

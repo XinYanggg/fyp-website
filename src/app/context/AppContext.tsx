@@ -30,6 +30,7 @@ interface AppContextType {
         disease: string,
         confidence: number
     ) => Promise<void>;
+    detectDisease: (file: File) => Promise<{ prediction: string, confidence: number } | null>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -61,7 +62,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
                 const res = await fetch("/api/farm/get");
                 const data = await res.json();
                 setFarms(data.farms || []);
-                console.log(data);
             } catch (err) {
                 console.error("Failed to load farms:", err);
             }
@@ -140,6 +140,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
     };
 
+    const detectDisease = async (file: File) => {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            const res = await fetch("api/scan/detect", {
+                method: "POST",
+                body: formData
+            })
+            const data = await res.json();
+            return data;
+        } catch (err) {
+            console.error("Error detected:", err);
+        }
+    }
+
     return (
         <AppContext.Provider
             value={{
@@ -157,6 +173,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
                 addMember,
                 removeMember,
                 saveScan,
+                detectDisease,
             }}
         >
             {children}

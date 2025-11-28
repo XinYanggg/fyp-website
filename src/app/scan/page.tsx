@@ -188,73 +188,82 @@ export default function ScanPage() {
                             <div className="text-center p-8 rounded-xl">
                                 <h2 className="text-3xl font-bold mb-3 text-gray-900">Result: {scanResult.disease}</h2>
                                 <p className="text-2xl font-bold text-primary-600">Confidence: {scanResult.confidence}%</p>
+                                {scanResult.confidence === 0 && (
+                                    <p className="text-red-600 font-semibold mt-3">
+                                        The image does not look like a durian leaf
+                                    </p>
+                                )}
                             </div>
 
-                            {!farmIdFromUrl && (
-                                <div className="relative w-full">
-                                    <select
-                                        value={selectedFarmId}
-                                        onChange={(e) => {
-                                            setSelectedFarmId(e.target.value);
-                                            const farm = farms.find(f => f._id?.toString() === e.target.value);
-                                            if (farm) setSelectedFarm(farm);
-                                            setSelectedTreeId('');
-                                        }}
-                                        className="w-full appearance-none px-4 py-3 bg-gray-100 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 cursor-pointer"
-                                    >
-                                        <option value="">Select a farm</option>
-                                        {farms.map((farm) => (
-                                            <option key={farm._id?.toString()} value={farm._id?.toString()}>
-                                                {farm.name} - {farm.location}
-                                            </option>
-                                        ))}
-                                    </select>
+                            {scanResult.confidence !== 0 && (
+                                <>
+                                    {!farmIdFromUrl && (
+                                        <div className="relative w-full">
+                                            <select
+                                                value={selectedFarmId}
+                                                onChange={(e) => {
+                                                    setSelectedFarmId(e.target.value);
+                                                    const farm = farms.find(f => f._id?.toString() === e.target.value);
+                                                    if (farm) setSelectedFarm(farm);
+                                                    setSelectedTreeId('');
+                                                }}
+                                                className="w-full appearance-none px-4 py-3 bg-gray-100 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 cursor-pointer"
+                                            >
+                                                <option value="">Select a farm</option>
+                                                {farms.map((farm) => (
+                                                    <option key={farm._id?.toString()} value={farm._id?.toString()}>
+                                                        {farm.name} - {farm.location}
+                                                    </option>
+                                                ))}
+                                            </select>
 
-                                    <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center">
-                                        <svg
-                                            className="w-4 h-4 text-gray-500"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
-                                        </svg>
-                                    </div>
-                                </div>
-                            )}
+                                            <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center">
+                                                <svg
+                                                    className="w-4 h-4 text-gray-500"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    )}
 
-                            {currentFarm && (
-                                <div className="relative w-full">
-                                    <select
-                                        value={selectedTreeId}
-                                        onChange={(e) => setSelectedTreeId(e.target.value)}
-                                        className="w-full appearance-none px-4 py-3 bg-gray-100 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 cursor-pointer"
-                                    >
-                                    <option value="">Select a tree</option>
-                                        {currentFarm.trees.map((tree) => (
-                                            <option key={tree.id} value={tree.id}>
-                                                Tree #{tree.id} - {tree.cultivar}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    {currentFarm && (
+                                        <div className="relative w-full">
+                                            <select
+                                                value={selectedTreeId}
+                                                onChange={(e) => setSelectedTreeId(e.target.value)}
+                                                className="w-full appearance-none px-4 py-3 bg-gray-100 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 cursor-pointer"
+                                            >
+                                                <option value="">Select a tree</option>
+                                                {currentFarm.trees.map((tree) => (
+                                                    <option key={tree.id} value={tree.id}>
+                                                        Tree #{tree.id} - {tree.cultivar}
+                                                    </option>
+                                                ))}
+                                            </select>
 
-                                    <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center">
-                                        <svg
-                                            className="w-4 h-4 text-gray-500"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                        </svg>
-                                    </div>
-                                </div>
+                                            <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center">
+                                                <svg
+                                                    className="w-4 h-4 text-gray-500"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
                             )}
 
                             <div className="flex gap-4">
                                 <Button
                                     onClick={handleSaveScan}
-                                    disabled={!selectedTreeId || !selectedFarmId}
+                                    disabled={!selectedTreeId || !selectedFarmId || scanResult.confidence==0}
                                     className="flex-1 py-4 font-semibold w-full text-black bg-gradient-to-r from-green-500 to-green-600 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                                 >
                                     Save Result

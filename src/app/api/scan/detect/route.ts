@@ -8,6 +8,11 @@ export async function POST(req: Request) {
         body: form,
     });
 
+    // const res = await fetch("http://127.0.0.1:8000/predict", {
+    //     method: "POST",
+    //     body: form,
+    // });
+
     const data = await res.json();
     return NextResponse.json(data);
 }

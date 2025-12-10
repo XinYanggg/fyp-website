@@ -18,6 +18,7 @@ export default function FarmDetailPage({ params }: { params: { id: string } }) {
     const [treeId, setTreeId] = useState('');
     const [cultivar, setCultivar] = useState('');
     const [searchQuery, setSearchQuery] = useState('');  // Search query state
+    const [errorMessage, setErrorMessage] = useState("");
 
     const { id } = useParams();
     const farm = farms.find(f => f._id === id) || selectedFarm;
@@ -49,15 +50,21 @@ export default function FarmDetailPage({ params }: { params: { id: string } }) {
         );
     });
 
-    const handleAddTree = () => {
+    const handleAddTree = async () => {
         if (treeId && cultivar) {
             if (farm._id) {
-                addTree(String(farm._id), treeId, cultivar);
+                const response = await addTree(String(farm._id), treeId, cultivar);
+
+                if (response?.error) {
+                    setErrorMessage(response.error);
+                    return;
+                }
             } else {
                 console.error("Farm ID is undefined");
             }
             setTreeId('');
             setCultivar('');
+            setErrorMessage('')
             setShowAddTree(false);
         }
     };
@@ -212,6 +219,10 @@ export default function FarmDetailPage({ params }: { params: { id: string } }) {
                         placeholder="e.g., Musang King, D24"
                         className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
                     />
+                    {/* Error message */}
+                    {errorMessage && (
+                        <p className="text-red-600 text-sm font-medium">{errorMessage}</p>
+                    )}
                     <Button onClick={handleAddTree} className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-medium hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
                         Add Tree
                     </Button>

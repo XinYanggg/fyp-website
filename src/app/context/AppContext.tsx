@@ -21,7 +21,7 @@ interface AppContextType {
     setSelectedTree: (tree: Tree | null) => void;
 
     addFarm: (name: string, location: string) => Promise<void>;
-    addTree: (farmId: string, treeId: string, cultivar: string) => Promise<void>;
+    addTree: (farmId: string, treeId: string, cultivar: string) => Promise<{ message?: string; error?: string; } | null>;
     addMember: (farmId: string, email: string) => Promise<void>;
     removeMember: (farmId: string, email: string) => Promise<void>;
     saveScan: (
@@ -89,11 +89,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     const addTree = async (farmId: string, treeId: string, cultivar: string) => {
         try {
-            await fetch("/api/farm/tree/add", {
+            const res = await fetch("/api/farm/tree/add", {
                 method: "POST",
                 body: JSON.stringify({ farmId, treeId, cultivar }),
             });
-            await refreshFarms();
+
+            const data = await res.json();   // Read server response JSON
+
+            // Only refresh farms if successful
+            if (res.ok) {
+                await refreshFarms();
+            }
+
+            return data;
         } catch (err) {
             console.error("Error adding tree:", err);
         }

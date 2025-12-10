@@ -22,6 +22,7 @@ export default function DashboardPage() {
     const [memberEmail, setMemberEmail] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedFarm, setSelectedFarmState] = useState<Farm | null>(null);
+    const [errorMessage, setErrorMessage] = useState('');
 
     // Get farm from farms array when selectedFarmForMember changes
     useEffect(() => {
@@ -43,10 +44,15 @@ export default function DashboardPage() {
         }
     };
 
-    const handleAddMember = () => {
+    const handleAddMember = async () => {
         if (selectedFarmForMember && memberEmail) {
-            addMember(selectedFarmForMember, memberEmail);
+            const response = await addMember(selectedFarmForMember, memberEmail);
+            if (response?.error) {
+                setErrorMessage(response.error); // Show error inline
+                return;
+            }
             setMemberEmail('');
+            setErrorMessage('');
         }
     };
 
@@ -181,6 +187,9 @@ export default function DashboardPage() {
                                 Add
                             </Button>
                         </div>
+                        {errorMessage && (
+                            <p className="text-red-600 text-sm font-medium mt-1">{errorMessage}</p>
+                        )}
                     </div>
 
                     <div>

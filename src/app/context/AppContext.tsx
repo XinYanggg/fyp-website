@@ -22,7 +22,7 @@ interface AppContextType {
 
     addFarm: (name: string, location: string) => Promise<void>;
     addTree: (farmId: string, treeId: string, cultivar: string) => Promise<{ message?: string; error?: string; } | null>;
-    addMember: (farmId: string, email: string) => Promise<void>;
+    addMember: (farmId: string, email: string) => Promise<{ error:string } | null>;
     removeMember: (farmId: string, email: string) => Promise<void>;
     saveScan: (
         farmId: string,
@@ -109,11 +109,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     const addMember = async (farmId: string, email: string) => {
         try {
-            await fetch("/api/farm/member/add", {
+            const res = await fetch("/api/farm/member/add", {
                 method: "POST",
                 body: JSON.stringify({ farmId, email }),
             });
-            await refreshFarms();
+
+            const data = await res.json();
+
+            // Refresh farms only if success
+            if (res.ok && data.farm) {
+                await refreshFarms();
+            }
+
+            return data;
         } catch (err) {
             console.error("Error adding member:", err);
         }

@@ -153,6 +153,7 @@ export default function DashboardPage() {
                         onChange={(e) => setFarmName(e.target.value)}
                         placeholder="Enter farm name"
                         className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                        required
                     />
                     <Input
                         label="Location"
@@ -160,11 +161,12 @@ export default function DashboardPage() {
                         onChange={(e) => setFarmLocation(e.target.value)}
                         placeholder="Enter location"
                         className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                        required
                     />
-                    <Button onClick={handleAddFarm} className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-medium hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+                    <Button type="submit" className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-medium hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
                         Add Farm
                     </Button>
-                </div>
+                </form>
             </Modal>
 
             <Modal isOpen={showManageMember} onClose={() => setShowManageMember(false)} title={`Manage ${selectedFarm?.name} Members`}>

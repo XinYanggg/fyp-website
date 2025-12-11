@@ -146,7 +146,13 @@ export default function DashboardPage() {
             </div>
 
             <Modal isOpen={showAddFarm} onClose={() => setShowAddFarm(false)} title="Add New Farm">
-                <div className="space-y-5">
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        handleAddFarm();
+                    }}
+                    className="space-y-5"
+                >
                     <Input
                         label="Name"
                         value={farmName}

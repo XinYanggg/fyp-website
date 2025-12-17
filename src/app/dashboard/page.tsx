@@ -10,6 +10,14 @@ import Input from '@/app/components/ui/Input';
 import Button from '@/app/components/ui/Button';
 import {Farm} from "@/app/lib/type";
 
+/**
+ * Dashboard Page
+ * 
+ * Main hub for authenticated users.
+ * 1. Displays list of farms owned or joined.
+ * 2. Allows adding new farms.
+ * 3. Provides management of farm members.
+ */
 export default function DashboardPage() {
     const router = useRouter();
     const { data: session } = useSession();
@@ -92,44 +100,44 @@ export default function DashboardPage() {
                     <div className="overflow-x-auto"> {/* Add this wrapper */}
                         <table className="w-full">
                             <thead className="bg-gray-100">
-                            <tr>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Name</th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Location</th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Trees</th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Members</th>
-                                <th className="px-6 py-4"></th>
-                            </tr>
+                                <tr>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Name</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Location</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Trees</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Members</th>
+                                    <th className="px-6 py-4"></th>
+                                </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
-                            {filteredFarms.map((f) => (
-                                <tr key={f._id?.toString()} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-4">
-                                        <button
-                                            onClick={() => {
-                                                setSelectedFarm(f);
-                                                router.push(`/farm/${f._id}`);
-                                            }}
-                                            className="text-primary-600 hover:text-primary-700 font-semibold transition-colors cursor-pointer"
-                                        >
-                                            {f.name}
-                                        </button>
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-700">{f.location}</td>
-                                    <td className="px-6 py-4 text-gray-700">{f.trees.length} Trees</td>
-                                    <td className="px-6 py-4 text-gray-700">{f.members.length} Members</td>
-                                    <td className="px-6 py-4">
-                                        <button
-                                            onClick={() => {
-                                                setSelectedFarmForMember(f._id ? f._id.toString() : null);
-                                                setShowManageMember(true);
-                                            }}
-                                            className="px-4 py-2 border-2 border-gray-300 rounded-lg text-sm font-medium cursor-pointer transition-all duration-300 ease-in-out hover:border-primary-500 hover:text-primary-600 hover:bg-primary-50 hover:shadow-md"
-                                        >
-                                            Manage Members
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
+                                {filteredFarms.map((f) => (
+                                    <tr key={f._id?.toString()} className="hover:bg-gray-50 transition-colors">
+                                        <td className="px-6 py-4">
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedFarm(f);
+                                                    router.push(`/farm/${f._id}`);
+                                                }}
+                                                className="text-primary-600 hover:text-primary-700 font-semibold transition-colors cursor-pointer"
+                                            >
+                                                {f.name}
+                                            </button>
+                                        </td>
+                                        <td className="px-6 py-4 text-gray-700">{f.location}</td>
+                                        <td className="px-6 py-4 text-gray-700">{f.trees.length} Trees</td>
+                                        <td className="px-6 py-4 text-gray-700">{f.members.length} Members</td>
+                                        <td className="px-6 py-4">
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedFarmForMember(f._id ? f._id.toString() : null);
+                                                    setShowManageMember(true);
+                                                }}
+                                                className="px-4 py-2 border-2 border-gray-300 rounded-lg text-sm font-medium cursor-pointer transition-all duration-300 ease-in-out hover:border-primary-500 hover:text-primary-600 hover:bg-primary-50 hover:shadow-md"
+                                            >
+                                                Manage Members
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>

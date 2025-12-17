@@ -1,3 +1,8 @@
+/**
+ * Global Loading UI
+ * 
+ * Automatically displayed by Next.js while page content is fetching.
+ */
 export default function Loading() {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50">

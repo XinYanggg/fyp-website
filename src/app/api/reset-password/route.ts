@@ -2,6 +2,15 @@ import bcrypt from "bcrypt";
 import clientPromise from "@/lib/mongodb";
 import {NextResponse} from "next/server";
 
+/**
+ * POST /api/reset-password
+ * 
+ * Completes the password reset process:
+ * 1. Validates the reset token.
+ * 2. Hashes the new password.
+ * 3. Updates the user's password in the database.
+ * 4. Invalidates the used token.
+ */
 export async function POST(req: Request) {
     const { token, password } = await req.json();
     const client = await clientPromise;

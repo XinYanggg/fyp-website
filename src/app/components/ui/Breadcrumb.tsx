@@ -7,6 +7,11 @@ interface BreadcrumbProps {
     items: BreadcrumbItem[];
 }
 
+/**
+ * Breadcrumb Component
+ * 
+ * Displays the navigation path for nested pages (e.g. Dashboard > Farm > Tree).
+ */
 export default function Breadcrumb({ items }: BreadcrumbProps) {
     return (
         <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">

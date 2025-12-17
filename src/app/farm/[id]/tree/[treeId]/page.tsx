@@ -10,9 +10,15 @@ import {useState} from 'react';
 import {Send} from 'lucide-react';
 import NotFound from "@/app/not-found";
 
+/**
+ * Tree Detail Page
+ * 
+ * Detailed view of a single tree's health history.
+ * 1. Shows current status and disease history.
+ */
 export default function TreeDetailPage({
-                                           params
-                                       }: {
+    params
+}: {
     params: { id: string; treeId: string }
 }) {
     const router = useRouter();
@@ -86,11 +92,10 @@ export default function TreeDetailPage({
                             <div>
                                 <span className="text-sm text-gray-600">Current Status:</span>
                                 <p className="text-lg">
-                                    <span className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${
-                                        tree.currentDisease === 'Healthy'
+                                    <span className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${tree.currentDisease === 'Healthy'
                                             ? 'bg-green-100 text-green-800'
                                             : 'bg-orange-100 text-orange-800'
-                                    }`}>
+                                        }`}>
                                         {tree.currentDisease}
                                     </span>
                                 </p>
@@ -98,21 +103,21 @@ export default function TreeDetailPage({
                         </div>
                     </div>
 
-                    <div
-                        className="bg-gradient-to-br from-primary-50 to-white p-8 rounded-xl border border-green-500 shadow-sm">
-                        <h3 className="font-semibold text-lg mb-4 text-gray-900 flex items-center gap-2">
-                            <MessageSquare className="w-5 h-5 text-primary-600"/>
-                            AI Recommendation
-                        </h3>
-                        <p className="text-gray-700 mb-6 leading-relaxed">{getRecommendation(tree.currentDisease)}</p>
-                        <Button
-                            onClick={() => setShowChat(true)}
-                            className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 py-3 rounded-xl font-medium hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                        >
-                            <MessageSquare className="w-5 h-5"/>
-                            Chat with AI Assistant
-                        </Button>
-                    </div>
+                    {/*<div*/}
+                    {/*    className="bg-gradient-to-br from-primary-50 to-white p-8 rounded-xl border border-green-500 shadow-sm">*/}
+                    {/*    <h3 className="font-semibold text-lg mb-4 text-gray-900 flex items-center gap-2">*/}
+                    {/*        <MessageSquare className="w-5 h-5 text-primary-600"/>*/}
+                    {/*        AI Recommendation*/}
+                    {/*    </h3>*/}
+                    {/*    <p className="text-gray-700 mb-6 leading-relaxed">{getRecommendation(tree.currentDisease)}</p>*/}
+                    {/*    <Button*/}
+                    {/*        onClick={() => setShowChat(true)}*/}
+                    {/*        className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 py-3 rounded-xl font-medium hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"*/}
+                    {/*    >*/}
+                    {/*        <MessageSquare className="w-5 h-5"/>*/}
+                    {/*        Chat with AI Assistant*/}
+                    {/*    </Button>*/}
+                    {/*</div>*/}
                 </div>
 
                 <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -122,28 +127,27 @@ export default function TreeDetailPage({
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead className="bg-gray-100">
-                            <tr>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Disease</th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Confidence</th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Scan Time</th>
-                            </tr>
+                                <tr>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Disease</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Confidence</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Scan Time</th>
+                                </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
-                            {sortedScans.map((scan, index) => (
-                                <tr key={index} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-4">
-                                        <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
-                                            scan.disease === 'Healthy'
-                                                ? 'bg-green-100 text-green-800'
-                                                : 'bg-orange-100 text-orange-800'
-                                        }`}>
-                                            {scan.disease}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-700 font-medium">{scan.confidence}%</td>
-                                    <td className="px-6 py-4 text-gray-600">{scan.timestamp}</td>
-                                </tr>
-                            ))}
+                                {sortedScans.map((scan, index) => (
+                                    <tr key={index} className="hover:bg-gray-50 transition-colors">
+                                        <td className="px-6 py-4">
+                                            <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${scan.disease === 'Healthy'
+                                                    ? 'bg-green-100 text-green-800'
+                                                    : 'bg-orange-100 text-orange-800'
+                                                }`}>
+                                                {scan.disease}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 text-gray-700 font-medium">{scan.confidence}%</td>
+                                        <td className="px-6 py-4 text-gray-600">{scan.timestamp}</td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>

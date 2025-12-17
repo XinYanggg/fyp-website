@@ -1,5 +1,10 @@
 import Link from 'next/link'
 
+/**
+ * 404 Not Found Page
+ * 
+ * Custom error page for unmatched routes.
+ */
 export default function NotFound() {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50">

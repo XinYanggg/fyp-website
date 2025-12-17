@@ -11,6 +11,14 @@ import Input from '@/app/components/ui/Input';
 import Button from '@/app/components/ui/Button';
 import NotFound from "@/app/not-found";
 
+/**
+ * Farm Detail Page
+ * 
+ * Shows detailed statistics for a specific farm.
+ * 1. Visualizes disease distribution (Pie Chart).
+ * 2. Lists all trees with search/filtering.
+ * 3. Allows adding new trees and initiating scans.
+ */
 export default function FarmDetailPage({ params }: { params: { id: string } }) {
     const router = useRouter();
     const { farms, selectedFarm, setSelectedFarm, setSelectedTree, addTree } = useApp();
@@ -90,19 +98,19 @@ export default function FarmDetailPage({ params }: { params: { id: string } }) {
                             <p><span className="font-medium text-gray-700">Members:</span> {farm.members.length}</p>
                             <p>
                                 <span className="font-medium text-gray-700">Last Scan:</span> {
-                                (() => {
-                                    const allScans = farm.trees.map(t => t.lastScan).filter(v => v !== "N/A");
-                                    return allScans.length > 0 ? allScans.sort((a, b) => new Date(b).getTime() - new Date(a).getTime())[0] : "N/A";
-                                })()
-                            }
+                                    (() => {
+                                        const allScans = farm.trees.map(t => t.lastScan).filter(v => v !== "N/A");
+                                        return allScans.length > 0 ? allScans.sort((a, b) => new Date(b).getTime() - new Date(a).getTime())[0] : "N/A";
+                                    })()
+                                }
                             </p>
                             <p>
                                 <span className="font-medium text-gray-700">Healthy:</span> {
-                                (() => {
-                                    const healthy = farm.trees.filter(t => t.currentDisease === "Healthy").length;
-                                    return ((healthy / farm.trees.length) * 100).toFixed(0) + "%";
-                                })()
-                            }
+                                    (() => {
+                                        const healthy = farm.trees.filter(t => t.currentDisease === "Healthy").length;
+                                        return ((healthy / farm.trees.length) * 100).toFixed(0) + "%";
+                                    })()
+                                }
                             </p>
                         </div>
                     </div>
@@ -149,7 +157,7 @@ export default function FarmDetailPage({ params }: { params: { id: string } }) {
                         New Tree
                     </Button>
                     <Button onClick={() => router.push(`/scan?farmId=${farm._id}`)}
-                            className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 py-3 rounded-xl font-medium hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+                        className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 py-3 rounded-xl font-medium hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
                         <Camera className="w-5 h-5"/>
                         Scan
                     </Button>
@@ -159,44 +167,43 @@ export default function FarmDetailPage({ params }: { params: { id: string } }) {
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead className="bg-gray-100">
-                            <tr>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Tree ID</th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Cultivar</th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Disease</th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Confidence</th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Last scan</th>
-                                <th className="px-6 py-4"></th>
-                            </tr>
+                                <tr>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Tree ID</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Cultivar</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Disease</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Confidence</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Last scan</th>
+                                    <th className="px-6 py-4"></th>
+                                </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
-                            {filteredTrees.map((tree) => (
-                                <tr key={tree.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-4 font-medium text-gray-900">{tree.id}</td>
-                                    <td className="px-6 py-4 text-gray-700">{tree.cultivar}</td>
-                                    <td className="px-6 py-4">
-                                        <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
-                                            tree.currentDisease === 'Healthy'
-                                                ? 'bg-green-100 text-green-800'
-                                                : 'bg-orange-100 text-orange-800'
-                                        }`}>
-                                          {tree.currentDisease}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-700">{tree.confidence}%</td>
-                                    <td className="px-6 py-4 text-gray-700">{tree.lastScan}</td>
-                                    <td className="px-6 py-4">
-                                        <button
-                                            onClick={() => {
-                                                setSelectedTree(tree);
-                                                router.push(`/farm/${farm._id}/tree/${tree.id}`);
-                                            }}
-                                            className="px-4 py-2 border-2 border-gray-300 rounded-lg text-sm font-medium cursor-pointer transition-all duration-300 ease-in-out hover:border-primary-500 hover:text-primary-600 hover:bg-primary-50 hover:shadow-md"
-                                        >
-                                            Details
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
+                                {filteredTrees.map((tree) => (
+                                    <tr key={tree.id} className="hover:bg-gray-50 transition-colors">
+                                        <td className="px-6 py-4 font-medium text-gray-900">{tree.id}</td>
+                                        <td className="px-6 py-4 text-gray-700">{tree.cultivar}</td>
+                                        <td className="px-6 py-4">
+                                            <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${tree.currentDisease === 'Healthy'
+                                                    ? 'bg-green-100 text-green-800'
+                                                    : 'bg-orange-100 text-orange-800'
+                                                }`}>
+                                                {tree.currentDisease}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 text-gray-700">{tree.confidence}%</td>
+                                        <td className="px-6 py-4 text-gray-700">{tree.lastScan}</td>
+                                        <td className="px-6 py-4">
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedTree(tree);
+                                                    router.push(`/farm/${farm._id}/tree/${tree.id}`);
+                                                }}
+                                                className="px-4 py-2 border-2 border-gray-300 rounded-lg text-sm font-medium cursor-pointer transition-all duration-300 ease-in-out hover:border-primary-500 hover:text-primary-600 hover:bg-primary-50 hover:shadow-md"
+                                            >
+                                                Details
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>

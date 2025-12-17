@@ -10,6 +10,9 @@ import React, {
 import { useSession } from "next-auth/react";
 import { Farm, Tree } from "@/app/lib/type";
 
+// ----------------------------------------------------------------------
+// Types & Interfaces
+// ----------------------------------------------------------------------
 interface AppContextType {
     farms: Farm[];
     selectedFarm: Farm | null;
@@ -20,21 +23,49 @@ interface AppContextType {
     setSelectedFarm: (farm: Farm | null) => void;
     setSelectedTree: (tree: Tree | null) => void;
 
+    /**
+     * Creates a new farm with the given name and location.
+     */
     addFarm: (name: string, location: string) => Promise<void>;
+
+    /**
+     * Adds a tree to a specific farm.
+     * @returns Object containing error message if failed, or null/success data.
+     */
     addTree: (farmId: string, treeId: string, cultivar: string) => Promise<{ message?: string; error?: string; } | null>;
+
+    /**
+     * Invite/Add a member to the farm by email.
+     */
     addMember: (farmId: string, email: string) => Promise<{ error:string } | null>;
+
+    /**
+     * Remove a member from the farm.
+     */
     removeMember: (farmId: string, email: string) => Promise<void>;
+
+    /**
+     * Saves a disease scan result to the database.
+     */
     saveScan: (
         farmId: string,
         treeId: string,
         disease: string,
         confidence: number
     ) => Promise<void>;
+
+    /**
+     * Uploads an image file to the detection API and returns prediction results.
+     */
     detectDisease: (file: File) => Promise<{ prediction: string, confidence: number } | null>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
+/**
+ * Global application context provider.
+ * Manages stats for farms, trees, and scan operations.
+ */
 export function AppProvider({ children }: { children: ReactNode }) {
     const { data: session, status } = useSession();
 
@@ -43,8 +74,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const [selectedTree, setSelectedTree] = useState<Tree | null>(null);
 
     // ------------------------------------------------------------
-    // Load farms from API when session becomes authenticated
+    // Initialize & Load Data
     // ------------------------------------------------------------
+
+    /**
+     * Refreshes the list of farms from the backend.
+     * Typically called after adding a farm or changing membership.
+     */
     const refreshFarms = async () => {
         try {
             const res = await fetch("/api/farm/get");
@@ -55,7 +91,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
     };
 
-    // load farms only when user is signed in
+    // Automatically load farms when the user session is authenticated.
     useEffect(() => {
         const refreshFarms = async () => {
             try {
@@ -72,7 +108,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }, [status]);
 
     // ------------------------------------------------------------
-    // API WRAPPERS
+    // API Wrappers / Actions
     // ------------------------------------------------------------
 
     const addFarm = async (name: string, location: string) => {
@@ -94,9 +130,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
                 body: JSON.stringify({ farmId, treeId, cultivar }),
             });
 
-            const data = await res.json();   // Read server response JSON
+            const data = await res.json();
 
-            // Only refresh farms if successful
             if (res.ok) {
                 await refreshFarms();
             }
@@ -116,7 +151,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
             const data = await res.json();
 
-            // Refresh farms only if success
             if (res.ok && data.farm) {
                 await refreshFarms();
             }
@@ -161,6 +195,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         formData.append("file", file);
 
         try {
+            // Proxies to external Flask/Python API via Next.js API route
             const res = await fetch("api/scan/detect", {
                 method: "POST",
                 body: formData
@@ -197,6 +232,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     );
 }
 
+/**
+ * Custom hook to access the AppContext.
+ * Must be used within an <AppProvider>.
+ */
 export function useApp() {
     const context = useContext(AppContext);
     if (!context) {

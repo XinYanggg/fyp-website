@@ -1,6 +1,12 @@
 import { InputHTMLAttributes, forwardRef } from 'react';
 import { cn } from '@/app/lib/utils';
 
+/**
+ * Reusable Input Component
+ * 
+ * Wraps standard HTMLInputElement with custom styling and optional label.
+ * Supports refs for form libraries or direct DOM manipulation.
+ */
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     label?: string;
 }

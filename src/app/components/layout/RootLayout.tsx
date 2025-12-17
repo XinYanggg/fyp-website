@@ -8,6 +8,14 @@ import { SessionProvider } from 'next-auth/react';
 
 const inter = Inter({ subsets: ['latin'] });
 
+/**
+ * Client-Side Root Layout
+ * 
+ * Wraps the application with:
+ * 1. SessionProvider (NextAuth)
+ * 2. AppProvider (Global State)
+ * 3. NavBar
+ */
 export default function RootLayout({
                                        children,
                                    }: {
@@ -15,17 +23,17 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-        <body className={inter.className}>
-        {/* Wrap the entire app in SessionProvider */}
-        <SessionProvider>
-            <AppProvider>
-                <div className="min-h-screen bg-gray-50">
-                    <NavBar />
-                    {children}
-                </div>
-            </AppProvider>
-        </SessionProvider>
-        </body>
+            <body className={inter.className}>
+                {/* Wrap the entire app in SessionProvider */}
+                <SessionProvider>
+                    <AppProvider>
+                        <div className="min-h-screen bg-gray-50">
+                            <NavBar />
+                            {children}
+                        </div>
+                    </AppProvider>
+                </SessionProvider>
+            </body>
         </html>
     );
 }

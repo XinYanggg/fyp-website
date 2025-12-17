@@ -4,6 +4,12 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from "next/link";
 
+/**
+ * Forgot Password Page
+ * 
+ * Collects user email to send a password reset link.
+ * Interacts with /api/forgot-password.
+ */
 export default function ForgotPasswordPage() {
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');

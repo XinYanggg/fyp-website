@@ -2,6 +2,14 @@ import clientPromise from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 
+/**
+ * POST /api/farm/add
+ * 
+ * Creates a new farm for the authenticated user.
+ * 1. Checks for authentication.
+ * 2. Initializes farm with owner and empty tree list.
+ * 3. Saves to MongoDB.
+ */
 export async function POST(req: Request) {
     const session = await getServerSession();
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

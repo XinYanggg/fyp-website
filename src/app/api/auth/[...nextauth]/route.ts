@@ -12,6 +12,16 @@ import {ObjectId} from "mongodb";
 const client = await clientPromise;
 const db = client.db("auth");
 
+/**
+ * NextAuth.js Configuration
+ * 
+ * Handles authentication using:
+ * 1. Google Provider
+ * 2. Credentials Provider (Email/Password)
+ * 3. MongoDB Adapter for session persistence
+ * 
+ * Includes callbacks for account linking and session management.
+ */
 export const authOptions = {
     adapter: MongoDBAdapter(clientPromise, {
         databaseName: "auth"

@@ -1,3 +1,9 @@
+/**
+ * Shared Theme Configuration
+ * 
+ * Defines global color palettes (Primary, Accent, Backgrounds, Text).
+ * Consistent with Tailwind config.
+ */
 export const theme = {
     primary: {
         50: '#f0fdf4',

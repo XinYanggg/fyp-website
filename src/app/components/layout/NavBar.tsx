@@ -5,6 +5,13 @@ import Link from 'next/link';
 import { Menu, LogOut } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 
+/**
+ * Navigation Bar Component
+ * 
+ * Responsive header with links to key sections (Benefits, Works, About).
+ * Handles authentication state (login/logout buttons, user avatar).
+ * Includes mobile menu toggle.
+ */
 export default function NavBar() {
     const { data: session } = useSession();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

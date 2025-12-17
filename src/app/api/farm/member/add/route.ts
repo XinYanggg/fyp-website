@@ -2,8 +2,20 @@ import clientPromise from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 import {Farm} from "@/app/lib/type";
 import {ObjectId} from "mongodb";
+import { getServerSession } from "next-auth";
 
+/**
+ * POST /api/farm/member/add
+ * 
+ * Adds a new member to an existing farm.
+ * 1. Checks for authentication.
+ * 2. Verifies that the user to add exists in the Auth DB.
+ * 3. Adds the user to the farm's members list.
+ */
 export async function POST(req: Request) {
+    const session = await getServerSession();
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const { farmId, email } = await req.json();
 
     const client = await clientPromise;

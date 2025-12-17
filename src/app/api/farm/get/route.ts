@@ -2,6 +2,11 @@ import clientPromise from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 
+/**
+ * GET /api/farm/get
+ * 
+ * Retrieves all farms where the authenticated user is a member.
+ */
 export async function GET() {
     const session = await getServerSession();
 

@@ -3,6 +3,14 @@ import {v4 as uuidv4} from "uuid";
 import nodemailer from "nodemailer";
 import {NextResponse} from "next/server";
 
+/**
+ * POST /api/forgot-password
+ * 
+ * Initiates the password reset process:
+ * 1. Verifies the email exists and is verified.
+ * 2. Generates a reset token (valid for 15 mins).
+ * 3. Sends a reset link via email.
+ */
 export async function POST(req: Request) {
     const {email} = await req.json();
     const client = await clientPromise;

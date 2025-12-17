@@ -6,6 +6,13 @@ import Input from '@/app/components/ui/Input';
 import Button from '@/app/components/ui/Button';
 import { motion } from 'framer-motion';
 
+/**
+ * Reset Password Page
+ * 
+ * Allows users to set a new password using a token from the URL.
+ * 1. Validates password matching.
+ * 2. POSTs to /api/reset-password.
+ */
 export default function ResetPasswordPage() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');

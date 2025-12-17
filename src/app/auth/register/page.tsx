@@ -7,6 +7,14 @@ import Button from '@/app/components/ui/Button';
 import {motion} from "framer-motion";
 import Link from "next/link";
 
+/**
+ * Registration Page
+ * 
+ * Allows new users to sign up.
+ * 1. Collects Name, Email, Password.
+ * 2. POSTs to /api/register.
+ * 3. Handles success/error feedback.
+ */
 export default function RegisterPage() {
     const router = useRouter();
     const [form, setForm] = useState({ name: "", email: "", password: "" });

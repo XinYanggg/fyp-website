@@ -6,12 +6,18 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     children: ReactNode;
 }
 
+/**
+ * Reusable Button Component
+ * 
+ * Supports variants: 'primary', 'secondary', 'outline'.
+ * Wraps standard HTMLButtonElement properties.
+ */
 export default function Button({
-                                   variant = 'primary',
-                                   children,
-                                   className,
-                                   ...props
-                               }: ButtonProps) {
+    variant = 'primary',
+    children,
+    className,
+    ...props
+}: ButtonProps) {
     const baseStyles = 'px-6 py-3 rounded-lg font-medium transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed';
 
     const variants = {

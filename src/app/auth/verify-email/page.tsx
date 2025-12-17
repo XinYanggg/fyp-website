@@ -4,6 +4,12 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
+/**
+ * Email Verification Page
+ * 
+ * Automatically triggers email verification on load based on URL token.
+ * Displays loading, success, or error states.
+ */
 export default function VerifyEmailPage() {
     const searchParams = useSearchParams();
     const router = useRouter();

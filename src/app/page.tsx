@@ -12,6 +12,10 @@ export default function HomePage() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-orange-50">
+
+            {/* ------------------------------------------------------------------------ */}
+            {/* HERO SECTION */}
+            {/* ------------------------------------------------------------------------ */}
             <div className="bg-gradient-to-r from-primary-100 to-primary-50 py-20 px-6">
                 <motion.div
                     initial={{opacity: 0, y: 20}}
@@ -50,6 +54,9 @@ export default function HomePage() {
                 </motion.div>
             </div>
 
+            {/* ------------------------------------------------------------------------ */}
+            {/* BENEFITS SECTION */}
+            {/* ------------------------------------------------------------------------ */}
             <section id="benefits" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
                 <motion.div
                     initial={{opacity: 0, y: 20}}
@@ -99,6 +106,9 @@ export default function HomePage() {
                 </div>
             </section>
 
+            {/* ------------------------------------------------------------------------ */}
+            {/* HOW IT WORKS SECTION */}
+            {/* ------------------------------------------------------------------------ */}
             <section id="works" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
                 <motion.div
                     initial={{opacity: 0, y: 20}}
@@ -179,6 +189,9 @@ export default function HomePage() {
                 </div>
             </section>
 
+            {/* ------------------------------------------------------------------------ */}
+            {/* FOOTER */}
+            {/* ------------------------------------------------------------------------ */}
             <section id="about">
                 <footer className="bg-gray-900 text-white py-12">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

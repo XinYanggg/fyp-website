@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";  // If using NextAuth for JWT auth
+import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 
 export async function proxy(req: NextRequest) {
-    // Get the token from the request (if user is authenticated via JWT or session)
+    // Get the token from the request (if user is authenticated)
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
     // Get the requested URL path

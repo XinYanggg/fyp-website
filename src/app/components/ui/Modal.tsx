@@ -10,6 +10,12 @@ interface ModalProps {
     title?: string;
 }
 
+/**
+ * Modal Component
+ * 
+ * Renders a centered dialog with a backdrop.
+ * Used for forms like "Add Farm" or "Add Tree".
+ */
 export default function Modal({ isOpen, onClose, children, title }: ModalProps) {
     if (!isOpen) return null;
 

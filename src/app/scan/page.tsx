@@ -26,6 +26,13 @@ export default function ScanPage() {
 
     const currentFarm = farms.find(f => f._id?.toString() === selectedFarmId) || selectedFarm;
 
+    // --------------------------------------------------------------------------------
+    // Handlers
+    // --------------------------------------------------------------------------------
+
+    /**
+     * Handle file selection from the file input (Click to Upload).
+     */
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -33,6 +40,9 @@ export default function ScanPage() {
         }
     };
 
+    /**
+     * Handle capture from the camera input (Mobile).
+     */
     const handleCameraCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -40,21 +50,39 @@ export default function ScanPage() {
         }
     };
 
+    /**
+     * Send the uploaded image to the backend for disease detection.
+     */
     const handleDetect = async () => {
         if (uploadedImage) {
             setLoading(true);
             const data = await detectDisease(uploadedImage);
             if (data) {
-                setScanResult({ disease: data.prediction.toLowerCase().split("_").map(word => word[0].toUpperCase() + word.slice(1)).join(" "), confidence: Math.round(data.confidence * 10000) / 100, });
+                // Format the disease name (e.g. "algal_leaf_spot" -> "Algal Leaf Spot")
+                const formattedDisease = data.prediction
+                    .toLowerCase()
+                    .split("_")
+                    .map(word => word[0].toUpperCase() + word.slice(1))
+                    .join(" ");
+
+                setScanResult({
+                    disease: formattedDisease,
+                    confidence: Math.round(data.confidence * 10000) / 100 // Convert to percentage with 2 decimals
+                });
             }
             setLoading(false);
         }
     };
 
+    /**
+     * Persist the scan result to the selected farm's tree history.
+     */
     const handleSaveScan = () => {
         if (scanResult && selectedTreeId && selectedFarmId) {
             saveScan(selectedFarmId, selectedTreeId, scanResult.disease, scanResult.confidence);
             alert('Scan saved successfully!');
+
+            // Cleanup and redirect
             setScanResult(null);
             setUploadedImage(null);
             setSelectedTreeId('');
@@ -62,6 +90,9 @@ export default function ScanPage() {
         }
     };
 
+    /**
+     * Reset the current scan session to start over.
+     */
     const handleReset = () => {
         setScanResult(null);
         setUploadedImage(null);

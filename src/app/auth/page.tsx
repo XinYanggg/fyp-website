@@ -8,6 +8,12 @@ import Input from '@/app/components/ui/Input';
 import Button from '@/app/components/ui/Button';
 import {motion} from "framer-motion";
 
+/**
+ * Login Page
+ * 
+ * Handles user authentication via standard credentials (email/password) or Google.
+ * Uses NextAuth's `signIn` method.
+ */
 export default function LoginPage() {
     const router = useRouter();
     const [form, setForm] = useState({ email: "", password: "" });

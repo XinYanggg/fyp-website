@@ -1,3 +1,9 @@
+/**
+ * PieChart Component
+ * 
+ * Renders a simple SVG pie chart to visualize disease distribution.
+ * Calculates arc paths based on percentage data.
+ */
 interface PieChartProps {
     data: Array<{ disease: string; count: number; percentage: number }>;
 }

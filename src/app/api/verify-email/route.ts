@@ -2,6 +2,14 @@ import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 
+/**
+ * GET /api/verify-email
+ * 
+ * Verifies a user's email address using a token.
+ * 1. extracts token from query params.
+ * 2. Finds user with matching verificationToken.
+ * 3. Sets isVerified to true and removes the token.
+ */
 export async function GET(request: Request) {
     try {
         const url = new URL(request.url);

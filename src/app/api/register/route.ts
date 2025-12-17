@@ -4,6 +4,16 @@ import clientPromise from "@/lib/mongodb";
 import { v4 as uuidv4 } from "uuid";
 import nodemailer from "nodemailer";
 
+/**
+ * POST /api/register
+ * 
+ * Handles user sign-up:
+ * 1. Validates input fields.
+ * 2. Checks if user already exists.
+ * 3. Hashes the password.
+ * 4. Creates a new user record (unverified).
+ * 5. Sends an email with a verification link.
+ */
 export async function POST(req: Request) {
     try {
         const { name, email, password } = await req.json();

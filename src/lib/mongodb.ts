@@ -1,3 +1,9 @@
+/**
+ * MongoDB Client Configuration
+ * 
+ * Establishes a cached connection to MongoDB.
+ * Used by NextAuth adapter and custom API routes.
+ */
 import { MongoClient } from "mongodb";
 
 const uri = process.env.MONGODB_URI as string;

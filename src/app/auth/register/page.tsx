@@ -37,7 +37,7 @@ export default function RegisterPage() {
         setLoading(false);
 
         if (res.ok) {
-            setSuccess("Signup successful! Redirecting to login...");
+            setSuccess("Signup successful! Please check your email to verify your account");
             setTimeout(() => router.push("/auth"), 1500);
         } else {
             const data = await res.json();

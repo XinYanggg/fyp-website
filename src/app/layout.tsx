@@ -3,7 +3,7 @@ import RootLayout from './components/layout/RootLayout'; // Assuming your RootLa
 
 // Metadata is handled in the layout (server-side)
 export const metadata: Metadata = {
-    title: 'durian.health - AI Disease Detection',
+    title: 'durian.health',
     description: 'AI-powered durian leaf disease detection for Malaysian farmers',
 };
 

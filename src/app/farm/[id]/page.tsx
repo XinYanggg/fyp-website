@@ -202,6 +202,15 @@ export default function FarmDetailPage({ params }: { params: { id: string } }) {
                         </table>
                     </div>
                 </div>
+
+                {filteredTrees.length === 0 && (
+                    <div className="text-center py-12">
+                        <div className="text-gray-400 text-6xl mb-4">🌴</div>
+                        <h3 className="text-xl font-semibold text-gray-700 mb-2">No tree found</h3>
+                        <p className="text-gray-500">Try adjusting your search or create a new tree</p>
+                    </div>
+                )}
+
             </div>
 
             <Modal isOpen={showAddTree} onClose={() => setShowAddTree(false)} title="Add New Tree">

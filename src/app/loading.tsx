@@ -1,0 +1,15 @@
+/**
+ * Global Loading UI
+ * 
+ * Automatically displayed by Next.js while page content is fetching.
+ */
+export default function Loading() {
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50">
+            <div className="flex flex-col items-center space-y-4">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+                <p className="text-gray-600 font-medium">Loading durian.health...</p>
+            </div>
+        </div>
+    )
+}

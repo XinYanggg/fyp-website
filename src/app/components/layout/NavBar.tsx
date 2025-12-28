@@ -48,12 +48,12 @@ export default function NavBar() {
                     >
                         Works
                     </Link>
-                    <Link
-                        href="/"
-                        className="text-gray-600 hover:text-green-600 transition-colors flex items-center gap-2"
-                    >
-                        Knowledge Base
-                    </Link>
+                    {/*<Link*/}
+                    {/*    href="/"*/}
+                    {/*    className="text-gray-600 hover:text-green-600 transition-colors flex items-center gap-2"*/}
+                    {/*>*/}
+                    {/*    Knowledge Base*/}
+                    {/*</Link>*/}
                     <Link
                         href="/#about"
                         className="text-gray-600 hover:text-green-600 transition-colors flex items-center gap-2"
@@ -138,13 +138,13 @@ export default function NavBar() {
                         >
                             Works
                         </Link>
-                        <Link
-                            href="/"
-                            onClick={() => setMobileMenuOpen(false)}
-                            className="text-left px-4 py-2 text-gray-700 hover:bg-gray-50 rounded transition-colors"
-                        >
-                            Knowledge Base
-                        </Link>
+                        {/*<Link*/}
+                        {/*    href="/"*/}
+                        {/*    onClick={() => setMobileMenuOpen(false)}*/}
+                        {/*    className="text-left px-4 py-2 text-gray-700 hover:bg-gray-50 rounded transition-colors"*/}
+                        {/*>*/}
+                        {/*    Knowledge Base*/}
+                        {/*</Link>*/}
                         <Link
                             href="/#about"
                             onClick={() => setMobileMenuOpen(false)}

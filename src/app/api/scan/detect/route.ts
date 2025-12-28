@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     const form = await req.formData();
 
     // The external model service URL (Python backend)
-    const res = await fetch("https://fyp-api-g49g.onrender.com/predict", {
+    const res = await fetch("https://durian-health-api.farnxinyang.com/predict", {
         method: "POST",
         body: form,
     });

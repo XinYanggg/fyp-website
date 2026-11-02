@@ -2,20 +2,22 @@ import clientPromise from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import {Farm} from "@/app/lib/type";
-import { getServerSession } from "next-auth";
+import { getAuthSession } from "@/lib/auth-helper";
 
 /**
  * POST /api/farm/tree/add
  * 
  * Adds a new tree to a specific farm.
- * 1. Checks for authentication.
+ * 1. Checks for authentication (Web or Mobile).
  * 2. Validates input (Farm ID, Tree ID, Cultivar).
  * 3. Checks for duplicates (Tree ID must be unique within the farm).
  * 4. Initializes tree with default stats (Healthy, zero confidence, etc).
  */
 export async function POST(req: Request) {
-    const session = await getServerSession();
-    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const session = await getAuthSession(req);
+    if (!session || !session.user?.email) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     try {
         const { farmId, treeId, cultivar } = await req.json();

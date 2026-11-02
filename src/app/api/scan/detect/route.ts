@@ -1,16 +1,18 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
+import { getAuthSession } from "@/lib/auth-helper";
 
 /**
- * POST handler for Disease Detection.
+ * POST /api/scan/detect
  * 
- * Proxies the request to the external FastAPI/Flask model service.
- * 1. Checks for authentication
- * 2. We do this to hide the external API URL from the client.
+ * Proxies the disease detection request to the external FastAPI/Flask model service.
+ * 1. Checks for authentication (Web or Mobile).
+ * 2. Hides the external Python AI API URL from the client.
  */
 export async function POST(req: Request) {
-    const session = await getServerSession();
-    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const session = await getAuthSession(req);
+    if (!session || !session.user?.email) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     const form = await req.formData();
 
@@ -19,12 +21,6 @@ export async function POST(req: Request) {
         method: "POST",
         body: form,
     });
-
-    // Local loopback for testing
-    // const res = await fetch("http://127.0.0.1:8000/predict", {
-    //     method: "POST",
-    //     body: form,
-    // });
 
     const data = await res.json();
     return NextResponse.json(data);

@@ -54,7 +54,7 @@ export async function POST(req: Request) {
 
         // Send verification email
         await resend.emails.send({
-        from: 'Acme <durian.health@farnxinyang.com>',
+        from: 'durian.health <durian.health@farnxinyang.com>',
         to: [email],
         subject: 'durian.health - Verify Your Email',
         html: `

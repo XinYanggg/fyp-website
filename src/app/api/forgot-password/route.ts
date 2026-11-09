@@ -49,7 +49,7 @@ export async function POST(req: Request) {
 
     // send email
     await resend.emails.send({
-    from: 'Acme <durian.health@farnxinyang.com>',
+    from: 'durian.health <durian.health@farnxinyang.com>',
     to: [email],
     subject: 'durian.health - Reset your password',
     html: `

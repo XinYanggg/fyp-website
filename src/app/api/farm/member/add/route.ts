@@ -31,13 +31,13 @@ export async function POST(req: Request) {
 
     const durianDb = client.db("durian");
     const farm = await durianDb.collection<Farm>("farms").findOneAndUpdate(
-        { _id: new ObjectId(farmId) },
+        { _id: new ObjectId(farmId), ownerEmail: session.user.email },
         { $addToSet: { members: { email, role: "member" } } },
         { returnDocument: "after" }
     );
 
     if (!farm) {
-        return NextResponse.json({ error: "Farm not found" }, { status: 404 });
+        return NextResponse.json({ error: "Farm not found or you are not the owner" }, { status: 404 });
     }
 
     return NextResponse.json({ farm: farm });

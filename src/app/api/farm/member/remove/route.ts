@@ -23,10 +23,15 @@ export async function POST(req: Request) {
     const db = client.db("durian");
 
     const farm = await db.collection<Farm>("farms").findOneAndUpdate(
-        { _id: new ObjectId(farmId) },
-        { $pull: { members: { email } } },
+        // Only the owner can remove members, and the owner can't be removed
+        { _id: new ObjectId(farmId), ownerEmail: session.user.email },
+        { $pull: { members: { email, role: { $ne: "owner" } } } },
         { returnDocument: "after" }
     );
+
+    if (!farm) {
+        return NextResponse.json({ error: "Farm not found or you are not the owner" }, { status: 404 });
+    }
 
     return NextResponse.json({ farm: farm });
 }
